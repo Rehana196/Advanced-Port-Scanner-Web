@@ -1,0 +1,4 @@
+# requirements.txt
+# This application runs entirely using Python's standard library (tkinter, socket, threading, json, csv, etc.).
+# No external dependencies are strictly required.
+# However, you can run the scanner under Python 3.8+.

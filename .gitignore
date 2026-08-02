@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Application logs & scan output files
+logs/
+*.log
+
+# IDE & OS settings
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
