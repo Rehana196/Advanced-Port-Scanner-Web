@@ -52,21 +52,15 @@ class PortScanner:
             duration = time.time() - start
             
             if result_code == 0:
-                # Port is open. Gather info.
-                banner = grab_banner(self.target_ip, port, "tcp", timeout=self.timeout)
-                service, version = identify_service(port, "tcp", banner)
-                
-                # Attempt to get socket options to infer OS (TTL)
-                ttl = None
+                # Port is open. Safely attempt banner grabbing & service identification.
+                banner = ""
                 try:
-                    # IP_TTL option gets TTL of incoming packets on some platforms.
-                    # As a simple backup/standard option, standard connect doesn't expose TTL easily
-                    # without raw sockets, so we rely more on banners and general heuristics.
-                    pass
+                    banner = grab_banner(self.target_ip, port, "tcp", timeout=self.timeout)
                 except Exception:
-                    pass
-                
-                os_heuristic = detect_os(banner=banner, ttl=ttl, port_services={port: service})
+                    banner = ""
+
+                service, version = identify_service(port, "tcp", banner)
+                os_heuristic = detect_os(banner=banner, ttl=None, port_services={port: service})
                 
                 result = {
                     "port": port,
@@ -82,7 +76,10 @@ class PortScanner:
                     self.results.append(result)
                 
                 if self.callback:
-                    self.callback(result)
+                    try:
+                        self.callback(result)
+                    except Exception:
+                        pass
             s.close()
         except Exception:
             pass
