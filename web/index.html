@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADVANCED PORT SCANNER // CYBERPUNK WEB DASHBOARD</title>
+
+  <!-- Google Fonts: JetBrains Mono & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Banner -->
+    <header class="cyber-header">
+      <div class="brand-group">
+        <div class="cyber-logo-icon">⚡</div>
+        <div>
+          <h1 class="brand-title">ADVANCED PORT SCANNER <span class="version-badge">v2.0 WEB</span></h1>
+          <p class="brand-subtitle">MULTI-THREADED RECONNAISSANCE & FINGERPRINTING ENGINE</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <div class="status-badge" id="local-ip-badge">
+          <span class="status-indicator online"></span>
+          <span id="local-ip-text">LOCAL IP: DETECTING...</span>
+        </div>
+        <div class="status-badge engine-badge">
+          <span class="status-indicator ready" id="engine-status-indicator"></span>
+          <span id="engine-status-text">SYSTEM READY</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="cyber-nav">
+      <button class="nav-tab active" data-tab="scan-tab">
+        <span class="tab-icon">🎯</span> SCANNER ENGINE
+      </button>
+      <button class="nav-tab" data-tab="matrix-tab">
+        <span class="tab-icon">📊</span> LIVE MATRIX & ANALYTICS
+      </button>
+      <button class="nav-tab" data-tab="history-tab">
+        <span class="tab-icon">📜</span> SCAN LOGS & HISTORY
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="cyber-content">
+      
+      <!-- SCANNER TAB -->
+      <section class="tab-pane active" id="scan-tab">
+        <!-- Scan Parameters Card -->
+        <div class="cyber-card">
+          <div class="card-header">
+            <h2 class="card-title">⚡ SCAN PARAMETERS & ENGINE CONFIGURATION</h2>
+            <div class="preset-badges">
+              <span class="preset-chip" onclick="setTargetPreset('127.0.0.1')">Localhost (127.0.0.1)</span>
+              <span class="preset-chip" onclick="setTargetPreset('scanme.nmap.org')">scanme.nmap.org</span>
+            </div>
+          </div>
+          
+          <div class="form-grid">
+            <!-- Target Input -->
+            <div class="form-group col-span-2">
+              <label for="target-input">TARGET IP / HOSTNAME</label>
+              <div class="input-wrapper">
+                <input type="text" id="target-input" value="127.0.0.1" placeholder="e.g. 192.168.1.1 or scanme.nmap.org" autocomplete="off">
+                <span class="input-glow"></span>
+              </div>
+            </div>
+
+            <!-- Port Range Input -->
+            <div class="form-group col-span-2">
+              <label for="ports-input">PORT RANGE / SPECIFICATION</label>
+              <div class="input-wrapper">
+                <input type="text" id="ports-input" value="1-1024" placeholder="e.g. 21-80,443 or type 'common'" autocomplete="off">
+                <span class="input-glow"></span>
+              </div>
+              <div class="port-presets">
+                <span class="preset-pill" onclick="setPortPreset('1-1024')">1-1024</span>
+                <span class="preset-pill" onclick="setPortPreset('common')">Common Ports</span>
+                <span class="preset-pill" onclick="setPortPreset('80,443,8080,8443,3000,5000,8000')">Web Ports</span>
+                <span class="preset-pill" onclick="setPortPreset('21,22,23,25,53,80,110,135,139,143,443,445,1433,3306,3389,5432,8080')">Top 17 Services</span>
+              </div>
+            </div>
+
+            <!-- Protocol -->
+            <div class="form-group">
+              <label for="proto-select">SCAN PROTOCOL</label>
+              <select id="proto-select">
+                <option value="TCP">TCP Connect Scan</option>
+                <option value="UDP">UDP Probe Scan</option>
+                <option value="Both (TCP+UDP)">Both (TCP + UDP)</option>
+              </select>
+            </div>
+
+            <!-- Thread Speed -->
+            <div class="form-group">
+              <label for="threads-input">SPEED / THREADS: <span id="threads-value" class="highlight-val">100</span></label>
+              <div class="range-container">
+                <input type="range" id="threads-slider" min="1" max="500" value="100" oninput="document.getElementById('threads-input').value = this.value; document.getElementById('threads-value').innerText = this.value;">
+                <input type="number" id="threads-input" min="1" max="500" value="100" onchange="document.getElementById('threads-slider').value = this.value; document.getElementById('threads-value').innerText = this.value;">
+              </div>
+            </div>
+
+            <!-- Timeout -->
+            <div class="form-group">
+              <label for="timeout-input">TIMEOUT (SECONDS)</label>
+              <input type="number" id="timeout-input" step="0.1" min="0.1" max="10.0" value="1.0">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-group btn-group col-span-2">
+              <button id="start-scan-btn" class="btn btn-primary" onclick="startScan()">
+                <span class="btn-icon">▶</span> INITIATE SCAN
+              </button>
+              <button id="stop-scan-btn" class="btn btn-danger" onclick="stopScan()" disabled>
+                <span class="btn-icon">⏹</span> ABORT SCAN
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Progress Section -->
+        <div class="cyber-card progress-card">
+          <div class="progress-header">
+            <span id="scan-status-text" class="status-ticker">SYSTEM IDLE // READY FOR SCAN OPERATORS</span>
+            <span id="scan-stats-text" class="scan-stats-ticker">PORTS: 0 / 0 | TIME: 0.00s</span>
+          </div>
+          <div class="cyber-progress-track">
+            <div id="cyber-progress-bar" class="cyber-progress-fill" style="width: 0%;"></div>
+            <span id="progress-percentage-text" class="progress-percent">0%</span>
+          </div>
+        </div>
+
+        <!-- Live Results Table & Export Card -->
+        <div class="cyber-card table-card">
+          <div class="table-toolbar">
+            <div class="table-title">
+              <h3>🔍 DISCOVERED OPEN PORTS & SERVICES (<span id="open-ports-count">0</span>)</h3>
+            </div>
+            
+            <div class="search-and-export">
+              <div class="search-box">
+                <input type="text" id="results-search" placeholder="Search port, service, OS..." oninput="filterResultsTable()">
+              </div>
+              <div class="export-buttons">
+                <button class="btn btn-sm btn-outline" onclick="exportResults('json')">📥 JSON</button>
+                <button class="btn btn-sm btn-outline" onclick="exportResults('csv')">📥 CSV</button>
+                <button class="btn btn-sm btn-outline" onclick="exportResults('txt')">📥 TXT</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="cyber-table" id="results-table">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(0)">PORT ⇕</th>
+                  <th onclick="sortTable(1)">PROTO ⇕</th>
+                  <th>STATE</th>
+                  <th onclick="sortTable(3)">SERVICE ⇕</th>
+                  <th>VERSION</th>
+                  <th onclick="sortTable(5)">ESTIMATED OS ⇕</th>
+                  <th>BANNER GRABBED</th>
+                </tr>
+              </thead>
+              <tbody id="results-table-body">
+                <tr class="empty-row">
+                  <td colspan="7">No scan results yet. Configure parameters above and press [ INITIATE SCAN ].</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- MATRIX & ANALYTICS TAB -->
+      <section class="tab-pane" id="matrix-tab">
+        <div class="analytics-grid">
+          <!-- Visual Port Matrix Grid -->
+          <div class="cyber-card col-span-2">
+            <div class="card-header">
+              <h2 class="card-title">🧩 INTERACTIVE PORT DISCOVERY MATRIX</h2>
+              <span class="matrix-legend"><span class="dot open-dot"></span> Open Port</span>
+            </div>
+            <div id="port-matrix-container" class="port-matrix-grid">
+              <div class="empty-matrix-msg">Execute a scan to generate the real-time port grid map.</div>
+            </div>
+          </div>
+
+          <!-- Service Distribution Chart Card -->
+          <div class="cyber-card">
+            <div class="card-header">
+              <h2 class="card-title">📊 SERVICE BREAKDOWN</h2>
+            </div>
+            <div id="service-chart-container" class="chart-box">
+              <div class="empty-matrix-msg">Waiting for open port services...</div>
+            </div>
+          </div>
+
+          <!-- OS Distribution Chart Card -->
+          <div class="cyber-card">
+            <div class="card-header">
+              <h2 class="card-title">💻 OS HEURISTICS ANALYSIS</h2>
+            </div>
+            <div id="os-chart-container" class="chart-box">
+              <div class="empty-matrix-msg">Waiting for OS fingerprinting data...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCAN LOGS & HISTORY TAB -->
+      <section class="tab-pane" id="history-tab">
+        <div class="history-layout">
+          <!-- Left Scan Records List -->
+          <div class="cyber-card history-list-card">
+            <div class="card-header">
+              <h2 class="card-title">📜 HISTORICAL RECORDS</h2>
+              <button class="btn btn-sm btn-danger-outline" onclick="clearHistoryRecords()">🗑️ CLEAR ALL</button>
+            </div>
+            <ul id="history-list" class="history-list-group">
+              <li class="empty-list-msg">No scan history recorded.</li>
+            </ul>
+          </div>
+
+          <!-- Right Details Viewer -->
+          <div class="cyber-card history-details-card">
+            <div class="card-header">
+              <h2 class="card-title">📄 SCAN RECORD DETAILS</h2>
+              <button id="history-export-btn" class="btn btn-sm btn-outline" style="display:none;" onclick="exportSelectedHistoryRecord()">📥 EXPORT REPORT</button>
+            </div>
+            <pre id="history-details-content" class="terminal-view">Select a scan record from the left list to view detailed telemetry output.</pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="cyber-footer">
+      <span>ADVANCED PORT SCANNER // FULL-STACK WEB EDITION</span>
+      <span>SYSTEM TIME: <span id="clock-display">00:00:00</span></span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: advanced-port-scanner
+    env: python
+    buildCommand: ""
+    startCommand: python web_server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0

@@ -1,16 +1,21 @@
-# Advanced Port Scanner
+# Advanced Port Scanner (Web & Desktop Edition)
 
-A professional, modular, multi-threaded port scanner written in Python with a premium "Dark Hacker" neon-cyberpunk GUI. It features advanced banner grabbing, service detection, OS heuristics, and report exporting capabilities.
+A professional, modular, multi-threaded port scanner written in Python featuring a modern **Neon Cyberpunk Web Application Dashboard** and desktop Tkinter GUI. It provides advanced banner grabbing, service detection, OS heuristics, live port grid matrix mapping, and report exporting capabilities.
 
 ## Architecture & Project Structure
-The project is built modularly following standard software engineering patterns:
+The project is built modularly following clean software engineering patterns:
 
 ```
 Advanced-Port-Scanner/
 │
-├── main.py                # Application entry point
-├── gui.py                 # Tkinter application UI (Dark Hacker Theme)
-├── scanner.py             # Multi-threaded TCP/UDP scanning engines
+├── main.py                # Universal application entry point (Web & GUI mode)
+├── web_server.py          # Python REST API server & static asset bridge
+├── web/                   # Cyberpunk Web Dashboard UI
+│   ├── index.html         # Responsive HTML5 layout
+│   ├── style.css          # Dark Hacker / Neon Cyberpunk Design System
+│   └── app.js             # Real-time WebSocket/polling UI controller & charts
+├── gui.py                 # Desktop Tkinter application UI
+├── scanner.py             # Multi-threaded TCP/UDP scanning engine
 ├── banner.py              # Custom network banner grabber
 ├── service_detection.py   # Banner regex matching and service discovery
 ├── os_detection.py        # TTL and banner OS heuristic classifier
@@ -22,28 +27,44 @@ Advanced-Port-Scanner/
 ```
 
 ## Features
-- **Interactive Cyberpunk UI**: Sleek neon elements using standard `tkinter.ttk` (no external styling engines needed).
-- **Multi-threaded Scan Pipeline**: Supports scanning hundreds of ports concurrently.
+- **Neon Cyberpunk Web Dashboard**: Interactive browser UI with live progress tracking, responsive glassmorphism design, and custom theme tokens.
+- **Interactive Port Matrix**: Visual grid map of open ports with real-time glowing indicators.
+- **Service & OS Analytics**: Breakdown charts of detected services and heuristic operating system distributions.
+- **Multi-threaded Scan Pipeline**: Supports concurrent scanning across hundreds of ports with custom speed/thread sliders.
 - **Service Versioning**: Connects and analyzes service banners (e.g. Apache, SSH, nginx version extraction).
-- **Heuristic OS Analysis**: Detects target operating systems by parsing signature matches in banners and analyzing networking TTL parameters.
-- **Scan History Logs**: Remembers previous scans so you can review them inside the log dashboard.
-- **Universal Exporter**: Quick-click generation of JSON, CSV, or human-readable TXT security reports.
+- **Heuristic OS Analysis**: Detects target operating systems by parsing signature matches in banners and analyzing TTL parameters.
+- **Scan History Logs**: Persists previous scan records for review in the dashboard log explorer.
+- **Universal Exporter**: Quick-click generation of JSON, CSV, or formatted TXT security reports.
 
 ## Getting Started
 
 ### Prerequisites
 - Python 3.8 or higher.
-- Standard libraries are used (`tkinter`, `socket`, `threading`, etc.). If you are on Linux, you may need to install the Tkinter package (e.g., `sudo apt-get install python3-tk`).
+- Standard libraries are used (`socket`, `http.server`, `threading`, `json`). Zero third-party web dependencies required!
 
-### Running the App
-Execute the app using:
+### Running the Application
+
+#### Option 1: Web Application Mode (Default)
+Run the web application server and automatically open the dashboard in your default browser:
 ```bash
 python main.py
 ```
+Or specify a custom port:
+```bash
+python main.py --port 8080
+```
+Then navigate to `http://localhost:5000` (or your custom port) in any web browser.
 
-### Usage
-1. Enter your Target IP or Hostname (e.g. `127.0.0.1` or `scanme.nmap.org`).
-2. Provide a port list or range (e.g. `21-80,443`). Alternatively, type `common` to query the list of popular TCP/UDP services configured in `config.py`.
-3. Choose your protocol (TCP, UDP, or Both) and specify how many threads to allocate.
-4. Press **INITIATE SCAN**.
-5. Once complete, select your preferred format in the bottom right corner to export a report, or look in the **[ SCAN LOGS & HISTORY ]** tab to view your past logs.
+#### Option 2: Desktop GUI Mode
+To launch the traditional desktop Tkinter window:
+```bash
+python main.py --gui
+```
+
+## Usage
+1. Enter your **Target IP or Hostname** (e.g. `127.0.0.1` or `scanme.nmap.org`).
+2. Provide a **Port list or range** (e.g. `21-80,443` or click quick preset buttons like `Common Ports` or `Web Ports`).
+3. Choose your protocol (`TCP`, `UDP`, or `Both`) and set your thread count slider.
+4. Click **[ INITIATE SCAN ]**.
+5. Watch the live progress bar, port matrix, and real-time open port table populate.
+6. Export reports in **JSON**, **CSV**, or **TXT** format with one click, or review past telemetry in the **[ SCAN LOGS & HISTORY ]** tab.
