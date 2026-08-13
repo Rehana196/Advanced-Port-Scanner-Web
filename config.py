@@ -33,7 +33,7 @@ THEME = {
 }
 
 # Scan Configuration Defaults
-DEFAULT_TIMEOUT = 1.0
+DEFAULT_TIMEOUT = 0.5
 DEFAULT_THREADS = 100
 MAX_THREADS = 500
 
